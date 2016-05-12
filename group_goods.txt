@@ -1,0 +1,15 @@
+Once Other
+Month Other
+Daily Other
+Once Cannabis
+Month Cannabis
+Daily Cannabis
+Once Hallucinogens
+Month Hallucinogens
+Daily Hallucinogens
+Once Depressants
+Month Depressants
+Daily Depressants
+Once Stimulants
+Month Stimulants
+Daily Stimulants
