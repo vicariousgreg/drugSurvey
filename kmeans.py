@@ -39,7 +39,8 @@ def main():
             for i,x in enumerate(point.coordinates):
                 if x > 0:
                     substances.append(goods[i])
-                    subsets[int(x**0.5)-1].append(goods[i])
+                    #subsets[int(x**0.5)-1].append(goods[i])
+                    subsets[int(x)-1].append(goods[i])
             #print(", ".join(substances))
             #print("  " + str(point))
         categories = ["Once", "Month", "Daily"]

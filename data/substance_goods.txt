@@ -1,3 +1,9 @@
+Month Alcohol
+Daily Alcohol
+Month Caffeine
+Daily Caffeine
+Month Nicotine
+Daily Nicotine
 Month Cannabis
 Daily Cannabis
 Month Barbiturates

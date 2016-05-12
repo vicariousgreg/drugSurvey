@@ -1,8 +1,8 @@
 ignore_once = True
 ignore_month = False
-restrict_alcohol = True
-restrict_caffeine = True
-restrict_nicotine = True
+restrict_alcohol = False
+restrict_caffeine = False
+restrict_nicotine = False
 restrict_cannabis = False
 
 substances = []
@@ -53,6 +53,15 @@ groups = dict([
             "Crack Cocaine",
         ]
     ),
+    ("Alcohol",
+        [ ]
+    ),
+    ("Nicotine",
+        [ ]
+    ),
+    ("Caffeine",
+        [ ]
+    ),
     ("Hallucinogens",
         [
             "Psychedelic Hallucinogens",
@@ -63,20 +72,22 @@ groups = dict([
     ("Cannabis",
         [ ]
     ),
+    ("Antidepressants",
+        ["Antidepressants"]
+    ),
     ("Other",
         [
             "Steroids",
-            "Antidepressants",
             "Other"
         ]
     )
 ])
 if not restrict_alcohol:
-    groups["Depressants"].append("Alcohol")
+    groups["Alcohol"].append("Alcohol")
 if not restrict_caffeine:
-    groups["Stimulants"].append("Caffeine")
+    groups["Caffeine"].append("Caffeine")
 if not restrict_nicotine:
-    groups["Stimulants"].append("Nicotine")
+    groups["Nicotine"].append("Nicotine")
 if not restrict_cannabis:
     groups["Cannabis"].append("Cannabis")
 
@@ -281,7 +292,8 @@ def generate_items(entries):
             line = entry.get_substances_line()
             data = []
             for sub in substances:
-                data.append(str((entry.usage.get(sub, -1)+1)**2))
+                #data.append(str((entry.usage.get(sub, -1)+1)**2))
+                data.append(str((entry.usage.get(sub, -1)+1)))
             if all(x == "0" for x in data): continue
             line = ",".join(data)
             if len(line) > 0:
@@ -292,7 +304,8 @@ def generate_items(entries):
             line = entry.get_groups_line()
             data = []
             for group in groups:
-                data.append(str((entry.group_usage.get(group, -1)+1)**2))
+                #data.append(str((entry.group_usage.get(group, -1)+1)**2))
+                data.append(str((entry.group_usage.get(group, -1)+1)))
             if all(x == "0" for x in data): continue
             line = ",".join(data)
             if len(line) > 0:
