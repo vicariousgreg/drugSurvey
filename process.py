@@ -1,16 +1,22 @@
 restrict_alcohol = True
+restrict_caffeine = True
+restrict_nicotine = True
+restrict_cannabis = True
 
+substances = []
 if not restrict_alcohol:
-    substances = ["Alcohol"]
-else:
-    substances = []
+    substances.append("Alcohol")
+if not restrict_caffeine:
+    substances.append("Caffeine")
+if not restrict_nicotine:
+    substances.append("Nicotine")
+if not restrict_cannabis:
+    substances.append("Cannabis")
+
 substances.append("Barbiturates")
 substances.append("Benzodiazepines")
 substances.append("Other Hypnotics")
 substances.append("Opiods")
-substances.append("Nicotine")
-substances.append("Cannabis")
-substances.append("Caffeine")
 substances.append("Inhalants")
 substances.append("MDMA")
 substances.append("Methamphetamine")
@@ -37,8 +43,6 @@ groups = dict([
     ),
     ("Stimulants",
         [
-            "Nicotine",
-            "Caffeine",
             "MDMA",
             "Methamphetamine",
             "Pharmaceutical Amphetamines",
@@ -55,9 +59,7 @@ groups = dict([
         ]
     ),
     ("Cannabis",
-        [
-            "Cannabis",
-        ]
+        [ ]
     ),
     ("Other",
         [
@@ -69,6 +71,12 @@ groups = dict([
 ])
 if not restrict_alcohol:
     substances["Depressants"].append("Alcohol")
+if not restrict_caffeine:
+    substances["Stimulants"].append("Caffeine")
+if not restrict_nicotine:
+    substances["Stimulants"].append("Nicotine")
+if not restrict_cannabis:
+    substances["Cannabis"].append("Cannabis")
 
 inverse_groups = dict()
 for gr,vals in groups.iteritems():
