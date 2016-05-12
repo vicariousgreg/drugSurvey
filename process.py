@@ -1,7 +1,9 @@
+ignore_once = True
+ignore_month = True
 restrict_alcohol = True
 restrict_caffeine = True
 restrict_nicotine = True
-restrict_cannabis = True
+restrict_cannabis = False
 
 substances = []
 if not restrict_alcohol:
@@ -70,13 +72,13 @@ groups = dict([
     )
 ])
 if not restrict_alcohol:
-    substances["Depressants"].append("Alcohol")
+    groups["Depressants"].append("Alcohol")
 if not restrict_caffeine:
-    substances["Stimulants"].append("Caffeine")
+    groups["Stimulants"].append("Caffeine")
 if not restrict_nicotine:
-    substances["Stimulants"].append("Nicotine")
+    groups["Stimulants"].append("Nicotine")
 if not restrict_cannabis:
-    substances["Cannabis"].append("Cannabis")
+    groups["Cannabis"].append("Cannabis")
 
 inverse_groups = dict()
 for gr,vals in groups.iteritems():
@@ -85,26 +87,31 @@ for gr,vals in groups.iteritems():
 
 substance_goods = []
 for substance in substances:
-    substance_goods.append("Once " + substance)
-    substance_goods.append("Month " + substance)
+    if not ignore_once: substance_goods.append("Once " + substance)
+    if not ignore_month: substance_goods.append("Month " + substance)
     substance_goods.append("Daily " + substance)
 
 group_goods = []
 for group in groups:
-    group_goods.append("Once " + group)
-    group_goods.append("Month " + group)
+    if not ignore_once: group_goods.append("Once " + group)
+    if not ignore_month: group_goods.append("Month " + group)
     group_goods.append("Daily " + group)
 
 def generate_goods():
-    with open("substance_goods.txt", "w+") as f:
+    with open("data/substance_goods.txt", "w+") as f:
         for good in substance_goods: f.write(good + "\n")
-    with open("group_goods.txt", "w+") as f:
+    with open("data/group_goods.txt", "w+") as f:
         for good in group_goods: f.write(good + "\n")
+    with open("data/c_substance_goods.txt", "w+") as f:
+        for substance in substances: f.write(substance + "\n")
+    with open("data/c_group_goods.txt", "w+") as f:
+        for good in groups: f.write(good + "\n")
 
 class Entry:
     def __init__(self, responses):
         self.responses = responses
         self.usage = dict()
+        self.group_usage = dict()
         self.once = set()
         self.month = set()
         self.daily = set()
@@ -114,17 +121,34 @@ class Entry:
             if restrict_alcohol and "Alcohol" in line:
                 continue
             if "Used at Least Once" in line:
+                if ignore_once: continue
                 substance = line[:line.index("Used")].strip()
                 substance = substance.split("(")[0].strip()
                 self.usage[substance] = 0
+
+                try:
+                    group = inverse_groups[substance]
+                    if group not in self.group_usage:
+                        self.group_usage[group] = 0
+                except KeyError: pass
+
                 self.once.add(substance)
                 self.substances_bag.add("Once " + substance)
                 try: self.group_bag.add("Once " + inverse_groups[substance])
                 except KeyError: pass
             elif "Used in Past 30 Days" in line:
+                if ignore_month: continue
                 substance = line[:line.index("Used")].strip()
                 substance = substance.split("(")[0].strip()
                 self.usage[substance] = 1
+
+                try:
+                    group = inverse_groups[substance]
+                    if group not in self.group_usage or \
+                           self.group_usage[group] < 1:
+                        self.group_usage[group] = 1
+                except KeyError: pass
+
                 self.month.add(substance)
                 self.substances_bag.add("Month " + substance)
                 try: self.group_bag.add("Month " + inverse_groups[substance])
@@ -133,6 +157,14 @@ class Entry:
                 substance = line[:line.index("Used")].strip()
                 substance = substance.split("(")[0].strip()
                 self.usage[substance] = 2
+
+                try:
+                    group = inverse_groups[substance]
+                    if group not in self.group_usage or \
+                           self.group_usage[group] < 1:
+                        self.group_usage[group] = 2
+                except KeyError: pass
+
                 self.daily.add(substance)
                 self.substances_bag.add("Daily " + substance)
                 try: self.group_bag.add("Daily " + inverse_groups[substance])
@@ -152,7 +184,6 @@ class Entry:
                     try: self.group_bag.remove(key + " " + group)
                     except KeyError: pass
                 self.group_bag.add(values[max_value] + " " + group)
-
 
         for i in xrange(2, 9):
             self.responses[i] = " ".join(self.responses[i])
@@ -200,7 +231,7 @@ def read_data():
 
     output = []
 
-    for f in ("survey1.txt", "survey2.txt"):
+    for f in ("data/survey1.txt", "data/survey2.txt"):
         lines = list(l.strip() for l in open(f).readlines())
         for line in lines:
             if "Q1:" in line:
@@ -227,23 +258,45 @@ def read_data():
         response = dict()
         output.append("Response %d" % (count))
 
-    with open("clean_survey.txt", "w+") as f:
+    with open("data/clean_survey.txt", "w+") as f:
         for line in output: f.write(line + "\n")
 
     return entries
 
 def generate_items(entries):
-    with open("substance_items.csv", "w+") as f:
+    with open("data/substance_items.csv", "w+") as f:
         for i,entry in enumerate(entries):
             line = entry.get_substances_line()
             if len(line) > 0:
                 f.write("%d,%s\n" % (i,line))
 
-    with open("group_items.csv", "w+") as f:
+    with open("data/group_items.csv", "w+") as f:
         for i,entry in enumerate(entries):
             line = entry.get_groups_line()
             if len(line) > 0:
                 f.write("%d,%s\n" % (i,line))
+
+    with open("substance_clustering.csv", "w+") as f:
+        for entry in entries:
+            line = entry.get_substances_line()
+            data = []
+            for sub in substances:
+                data.append(str((entry.usage.get(sub, -1)+1)**2))
+            if all(x == "0" for x in data): continue
+            line = ",".join(data)
+            if len(line) > 0:
+                f.write("%s\n" % line)
+
+    with open("group_clustering.csv", "w+") as f:
+        for entry in entries:
+            line = entry.get_groups_line()
+            data = []
+            for group in groups:
+                data.append(str((entry.group_usage.get(group, -1)+1)**2))
+            if all(x == "0" for x in data): continue
+            line = ",".join(data)
+            if len(line) > 0:
+                f.write("%s\n" % line)
 
 def print_table(entries):
 # Print table
