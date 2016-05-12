@@ -1,18 +1,36 @@
+Month Cannabis
 Daily Cannabis
+Month Barbiturates
 Daily Barbiturates
+Month Benzodiazepines
 Daily Benzodiazepines
+Month Other Hypnotics
 Daily Other Hypnotics
+Month Opiods
 Daily Opiods
+Month Inhalants
 Daily Inhalants
+Month MDMA
 Daily MDMA
+Month Methamphetamine
 Daily Methamphetamine
+Month Pharmaceutical Amphetamines
 Daily Pharmaceutical Amphetamines
+Month Ritalin
 Daily Ritalin
+Month Cocaine
 Daily Cocaine
+Month Crack Cocaine
 Daily Crack Cocaine
+Month Psychedelic Hallucinogens
 Daily Psychedelic Hallucinogens
+Month Dissociative Hallucinogens
 Daily Dissociative Hallucinogens
+Month Deliriant Hallucinogens
 Daily Deliriant Hallucinogens
+Month Steroids
 Daily Steroids
+Month Antidepressants
 Daily Antidepressants
+Month Other
 Daily Other

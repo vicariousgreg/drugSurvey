@@ -1,5 +1,5 @@
 ignore_once = True
-ignore_month = True
+ignore_month = False
 restrict_alcohol = True
 restrict_caffeine = True
 restrict_nicotine = True
@@ -276,7 +276,7 @@ def generate_items(entries):
             if len(line) > 0:
                 f.write("%d,%s\n" % (i,line))
 
-    with open("substance_clustering.csv", "w+") as f:
+    with open("data/substance_clustering.csv", "w+") as f:
         for entry in entries:
             line = entry.get_substances_line()
             data = []
@@ -287,7 +287,7 @@ def generate_items(entries):
             if len(line) > 0:
                 f.write("%s\n" % line)
 
-    with open("group_clustering.csv", "w+") as f:
+    with open("data/group_clustering.csv", "w+") as f:
         for entry in entries:
             line = entry.get_groups_line()
             data = []
