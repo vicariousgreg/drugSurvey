@@ -136,8 +136,8 @@ class Entry:
         for group in groups:
             max_value = -1
             for item in self.group_bag:
-                value,substance = tuple(item.split())
-                if values.index(value) > max_value:
+                value,gr = tuple(item.split())
+                if gr == group and values.index(value) > max_value:
                     max_value = values.index(value)
             if max_value > -1:
                 for key in values:
@@ -192,27 +192,32 @@ def read_data():
 
     output = []
 
-    lines = list(l.strip() for l in open("survey.txt").readlines())
-    for line in lines:
-        if "Q1:" in line:
-            if response:
-                entries.append(Entry(response))
-            in_response=True
-            response = dict()
-            output.append("Response %d" % (count))
-        elif "Edit Delete Export" in line:
-            output.append("")
-            in_response = False
-            count += 1
+    for f in ("survey1.txt", "survey2.txt"):
+        lines = list(l.strip() for l in open(f).readlines())
+        for line in lines:
+            if "Q1:" in line:
+                if response:
+                    entries.append(Entry(response))
+                in_response=True
+                response = dict()
+                output.append("Response %d" % (count))
+            elif "Edit Delete Export" in line:
+                output.append("")
+                in_response = False
+                count += 1
 
-        if in_response:
-            output.append(line)
-            if line.startswith("Q"):
-                current_q = int(line[1])
-                response[current_q] = []
-            else:
-                response[current_q].append(line)
-    entries.append(Entry(response))
+            if in_response:
+                output.append(line)
+                if line.startswith("Q"):
+                    current_q = int(line[1])
+                    response[current_q] = []
+                else:
+                    response[current_q].append(line)
+        if response:
+            entries.append(Entry(response))
+        in_response=True
+        response = dict()
+        output.append("Response %d" % (count))
 
     with open("clean_survey.txt", "w+") as f:
         for line in output: f.write(line + "\n")
@@ -229,22 +234,29 @@ def generate_items(entries):
     with open("group_items.csv", "w+") as f:
         for i,entry in enumerate(entries):
             line = entry.get_groups_line()
-            #print(line)
-            #print(entry.substances_bag)
             if len(line) > 0:
                 f.write("%d,%s\n" % (i,line))
 
 def print_table(entries):
 # Print table
-    chars = ["-", "+", "#"]
+    symbols = ["-", "+", "#"]
+    ordered_substances = sorted(substances, reverse=True,
+        key = lambda sub: len([entry for entry in entries if any(sub in y for y in entry.substances_bag)]))
+    for i in xrange(max(len(s) for s in ordered_substances)):
+        chars = []
+        for s in ordered_substances:
+            if len(s) > i: chars.append(s[i])
+            else: chars.append(" ")
+        print("   ".join(chars))
+
     for entry in entries:
         line = []
-        for substance in substances:
+        for substance in ordered_substances:
             try:
-                line.append(chars[entry.usage[substance]])
+                line.append(symbols[entry.usage[substance]])
             except:
                 line.append(" ")
-        print(" ".join(line))
+        print("   ".join(line))
 
 generate_goods()
 entries = read_data()
