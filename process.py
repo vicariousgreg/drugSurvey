@@ -1,4 +1,4 @@
-ignore_once = True
+ignore_once = False
 ignore_month = False
 restrict_alcohol = False
 restrict_caffeine = False
@@ -119,7 +119,8 @@ def generate_goods():
         for good in groups: f.write(good + "\n")
 
 class Entry:
-    def __init__(self, responses):
+    def __init__(self, responses, identity):
+        self.identity = identity
         self.responses = responses
         self.usage = dict()
         self.group_usage = dict()
@@ -196,11 +197,14 @@ class Entry:
                     except KeyError: pass
                 self.group_bag.add(values[max_value] + " " + group)
 
+        del self.responses[1]
         for i in xrange(2, 9):
             self.responses[i] = " ".join(self.responses[i])
             null_responses = ["Respondent skipped this question",
                 "N/A", "N/a", "M/A", "No", "None", "no", "No.", "nah",
-                "No I have not.", "I have not.", "No, I have not."]
+                "No I have not.", "I have not.", "No, I have not.",
+                "n/a", "Na", "NA", "Never.", "Nope", "Never",
+                "Not Applicable", "negative"]
             if self.responses[i] in null_responses:
                 del self.responses[i]
 
@@ -247,7 +251,7 @@ def read_data():
         for line in lines:
             if "Q1:" in line:
                 if response:
-                    entries.append(Entry(response))
+                    entries.append(Entry(response, count))
                 in_response=True
                 response = dict()
                 output.append("Response %d" % (count))
@@ -264,7 +268,7 @@ def read_data():
                 else:
                     response[current_q].append(line)
         if response:
-            entries.append(Entry(response))
+            entries.append(Entry(response, count))
         in_response=True
         response = dict()
         output.append("Response %d" % (count))
@@ -332,7 +336,70 @@ def print_table(entries):
                 line.append(" ")
         print("   ".join(line))
 
+def generate_summary(entries):
+    with open("data/substance_summary.txt", "w+") as sf:
+        with open("data/group_summary.txt", "w+") as gf:
+            sf.write("Total responses: %d\n" % len(entries))
+            gf.write("Total responses: %d\n" % len(entries))
+
+            # Print substance summary
+            once = dict()
+            month = dict()
+            daily = dict()
+            for substance in substances:
+                once[substance] = 0
+                month[substance] = 0
+                daily[substance] = 0
+            for entry in entries:
+                for substance,value in entry.usage.iteritems():
+                    if value == 0:
+                        once[substance] += 1
+                    elif value == 1:
+                        month[substance] += 1
+                    elif value == 2:
+                        daily[substance] += 1
+            for substance in substances:
+                sf.write(",".join((substance,
+                    str(once[substance]),
+                    str(month[substance]),
+                    str(daily[substance]))) + "\n")
+
+            # Print group summary
+            group_once = dict()
+            group_month = dict()
+            group_daily = dict()
+            for group in groups:
+                group_once[group] = 0
+                group_month[group] = 0
+                group_daily[group] = 0
+            for entry in entries:
+                for group,value in entry.group_usage.iteritems():
+                    if value == 0:
+                        group_once[group] += 1
+                    elif value == 1:
+                        group_month[group] += 1
+                    elif value == 2:
+                        group_daily[group] += 1
+            for group in groups:
+                gf.write(",".join((group,
+                    str(group_once[group]),
+                    str(group_month[group]),
+                    str(group_daily[group]))) + "\n")
+
+def generate_text_response_summary(entries):
+    questions = open("data/questions.txt").readlines()
+    with open("data/responses.txt", "w+") as f:
+        for i in xrange(2,9):
+            f.write(questions[i-1])
+            for entry in entries:
+                if i in entry.responses:
+                    f.write("#%d: %s\n" % (entry.identity, entry.responses[i]))
+            f.write("\n")
+            f.write("\n")
+
 generate_goods()
 entries = read_data()
 generate_items(entries)
 print_table(entries)
+generate_summary(entries)
+generate_text_response_summary(entries)

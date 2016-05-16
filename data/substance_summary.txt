@@ -1,0 +1,22 @@
+Total responses: 181
+Alcohol,13,155,8
+Caffeine,14,100,62
+Nicotine,49,40,17
+Cannabis,43,70,27
+Barbiturates,6,1,0
+Benzodiazepines,37,10,1
+Other Hypnotics,15,4,0
+Opiods,40,4,0
+Inhalants,16,5,0
+MDMA,36,20,1
+Methamphetamine,7,0,0
+Pharmaceutical Amphetamines,46,20,8
+Ritalin,22,4,0
+Cocaine,34,22,1
+Crack Cocaine,2,0,0
+Psychedelic Hallucinogens,48,22,0
+Dissociative Hallucinogens,25,3,0
+Deliriant Hallucinogens,1,0,0
+Steroids,7,0,1
+Antidepressants,16,1,15
+Other,2,2,1

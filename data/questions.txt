@@ -1,0 +1,8 @@
+Q1: Please indicate frequency of use for each class of substances:
+Q2: Please indicate other drug if selected:
+Q3: If you would consider yourself dependent on a drug, please indicate which drug(s):
+Q4: If you have ever sought professional help for issues relating to drug use, please indicate the drug and type of treatment:
+Q5: If you have ever successfully recovered from drug dependence, please indicate the drug and method of recovery:
+Q6: If you have ever been in trouble with the law for a drug related offense, please indicate which drug:
+Q7: If you have ever been involved in a drug-related accident (car accident, etc), please indicate which drug was involved:
+Q8: Additional comments:

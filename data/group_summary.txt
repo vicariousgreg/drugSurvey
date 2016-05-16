@@ -1,0 +1,10 @@
+Total responses: 181
+Depressants,59,17,1
+Alcohol,13,155,8
+Hallucinogens,51,23,0
+Caffeine,14,100,62
+Cannabis,43,70,27
+Nicotine,49,40,17
+Other,8,2,2
+Stimulants,49,37,6
+Antidepressants,16,1,15
